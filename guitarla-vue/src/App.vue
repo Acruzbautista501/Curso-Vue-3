@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { reactive, ref, onMounted, watch } from 'vue';
+  import { ref, onMounted, watch } from 'vue';
   import { db } from './data/guitarra';
   import type { carrito, guitar } from './interfaces/Guitar';
   import Guitarra from './components/Guitarra.vue';
