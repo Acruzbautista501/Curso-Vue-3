@@ -1,9 +1,24 @@
 <script setup lang="ts">
-import type { guitar } from '../interfaces/Guitar';
+  import type { guitar } from '../interfaces/Guitar'; 
 
-  const props = defineProps<{
+
+  // Escucha los eventos del componente padre
+    defineProps<{
     guitarra : guitar
   }>()
+
+
+  // Envia datos desde del componente hijo
+  const emit = defineEmits<{
+    (e: 'agregar-carrito', guitarra: guitar):void
+  }>()
+
+    // Función reactiva para manejar el el evento de botón
+  // const incrementar = () => {
+  //   emit('agregarCarrito')
+  // }
+
+
 </script>
 
 <template>
@@ -17,7 +32,13 @@ import type { guitar } from '../interfaces/Guitar';
       <h3 class="text-black fs-4 fw-bold text-uppercase">{{ guitarra.nombre }}</h3>
       <p>{{ guitarra.descripcion }}</p>
       <p class="fw-black text-primary fs-3">${{ guitarra.precio }}</p>
-      <button type="button" class="btn btn-dark w-100">Agregar al Carrito</button>
+      <button 
+        type="button" 
+        class="btn btn-dark w-100"
+        @click="$emit('agregar-carrito', guitarra)"
+      >  
+        Agregar al Carrito
+      </button>
     </div>
   </div>
 </template>
