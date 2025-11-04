@@ -26,11 +26,13 @@
     precio: 0
   })
 
-  watch(carrito, () => {
-    guardarLocalStorage()
-  }, {
-    deep: true
-  })
+// Observa cambios en el carrito y actualiza automáticamente el localStorage
+watch(carrito, () => {
+  guardarLocalStorage() // Guarda los cambios en el almacenamiento local
+}, {
+  deep: true // Permite detectar cambios dentro de los objetos del carrito
+})
+
 
 
   // Cuando el componente se monta
@@ -67,7 +69,7 @@
 
     // Variable que inyecta la posición del producto en el arreglo 
     const productoExiste = carrito.value[existeCarrito]
-    //Condicional que verifica que si el pŕoducto
+    //Condicional que verifica que si el pŕoducto existe
     if(productoExiste) {
       // va a inyectar la posición del producto en el arreglo
       productoExiste.cantidad++
@@ -121,15 +123,28 @@
 </script>
 
 <template>
-  <Header
-    :carrito="carrito"
+<!-- 
+  Props (izquierda): datos que el padre envía al hijo
+    :carrito="carrito" 
     :guitarra="guitarra"
+
+  🔹 Emits (derecha): eventos que el hijo envía al padre
     @decrementar-cantidad="decrementarCantidad"
     @incrementar-cantidad="incrementarCantidad"
     @agregar-carrito="agregarCarrito"
     @eliminar-producto="eliminarProducto"
     @vaciar-carrito="vaciarCarrito"
-  />
+-->
+<Header
+  :carrito="carrito" 
+  :guitarra="guitarra"
+  @decrementar-cantidad="decrementarCantidad"
+  @incrementar-cantidad="incrementarCantidad"
+  @agregar-carrito="agregarCarrito"
+  @eliminar-producto="eliminarProducto"
+  @vaciar-carrito="vaciarCarrito"
+/>
+
   <main class="container-xl mt-5">
     <h2 class="text-center">Nuestra Colección</h2>
 
