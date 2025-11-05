@@ -1,32 +1,50 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
 import type { Mascota, Alertas } from '../interfaces/Mascota';
 import Alerta from './Alerta.vue';
 
-const alerta = reactive<Alertas>({
-  tipo: '',
-  mensaje: ''
-})
+  const alerta = reactive<Alertas>({
+    tipo: '',
+    mensaje: ''
+  })
 
-const props = defineProps<{ paciente: Mascota }>()
+  const props = defineProps<{ paciente: Mascota }>()
 
-const emit = defineEmits<{
-  (e: 'update:nombre', value: string): void
-  (e: 'update:propietario', value: string): void
-  (e: 'update:email', value: string): void
-  (e: 'update:alta', value: string): void
-  (e: 'update:sintomas', value: string): void
-  (e: 'guardar-paciente'):void
-}>()
+  const pacienteProps = props.paciente
 
-const validar = () => {
-  const pacienteValidar = Object.values(props.paciente).includes('');
-  if (pacienteValidar) {
-    alerta.mensaje = 'Todos los campos son obligatorios'
-    alerta.tipo = 'error'
+  const emit = defineEmits<{
+    (e: 'update:nombre', value: string): void
+    (e: 'update:propietario', value: string): void
+    (e: 'update:email', value: string): void
+    (e: 'update:alta', value: string): void
+    (e: 'update:sintomas', value: string): void
+    (e: 'guardar-paciente'):void
+  }>()
+
+  const validar = () => {
+    const pacienteValidar = Object.values(pacienteProps).includes('');
+    if (pacienteValidar) {
+      alerta.mensaje = 'Todos los campos son obligatorios'
+      alerta.tipo = 'error'
+      return
+    }
+
+    emit('guardar-paciente')
+    alerta.mensaje = 'Paciente almacenado correctamente'
+    alerta.tipo = 'exito'
+
+    setTimeout(() => {
+      Object.assign(alerta, {
+        tipo: '',
+        mensaje: ''
+      })
+    },3000)
   }
-  emit('guardar-paciente')
-}
+
+  const editando = computed(() => {
+    return pacienteProps.id
+  })
+
 </script>
 
 
@@ -121,7 +139,7 @@ const validar = () => {
       <input 
         type="submit"
         class="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-colors"
-        value="Registrar Paciente"
+        :value="[editando ? 'Guardar Cambios':'Registrar Paciente']"
       />        
     </form>
   </div>

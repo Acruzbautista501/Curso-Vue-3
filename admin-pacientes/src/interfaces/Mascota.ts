@@ -1,4 +1,5 @@
 export interface Mascota {
+    id?: string | null
     nombre: string
     propietario: string
     email: string
