@@ -1,32 +1,34 @@
 <script setup lang="ts">
-  import { reactive } from 'vue';
-  import type { Mascota, Alertas } from '../interfaces/Mascota';
-  import Alerta from './Alerta.vue';
+import { reactive } from 'vue';
+import type { Mascota, Alertas } from '../interfaces/Mascota';
+import Alerta from './Alerta.vue';
 
-  const alerta = reactive<Alertas>({
-    tipo: '',
-    mensaje: ''
-  })
-  
-  const paciente = reactive<Mascota>( {
-    nombre: '',
-    propietario: '',
-    email: '',
-    alta: '',
-    sintomas: ''
-  })
+const alerta = reactive<Alertas>({
+  tipo: '',
+  mensaje: ''
+})
 
-  const validar = () => {
-    const pacienteValidar = Object.values(paciente).includes('');
+const props = defineProps<{ paciente: Mascota }>()
 
-    if(pacienteValidar) {
-      alerta.mensaje = 'Todos los campos son obligatorios'
-      alerta.tipo = 'error'
-      return
-    }
+const emit = defineEmits<{
+  (e: 'update:nombre', value: string): void
+  (e: 'update:propietario', value: string): void
+  (e: 'update:email', value: string): void
+  (e: 'update:alta', value: string): void
+  (e: 'update:sintomas', value: string): void
+  (e: 'guardar-paciente'):void
+}>()
+
+const validar = () => {
+  const pacienteValidar = Object.values(props.paciente).includes('');
+  if (pacienteValidar) {
+    alerta.mensaje = 'Todos los campos son obligatorios'
+    alerta.tipo = 'error'
   }
-  
+  emit('guardar-paciente')
+}
 </script>
+
 
 <template>
   <div class="md:w-1/2">
