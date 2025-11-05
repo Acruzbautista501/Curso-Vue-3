@@ -30,7 +30,7 @@ src/
 │
 ├── App.vue                # Componente raíz, contiene toda la lógica principal
 └── main.ts                # Punto de entrada de la aplicación
-
+```
 
 ## 🔄 Flujo de la Aplicación
 
