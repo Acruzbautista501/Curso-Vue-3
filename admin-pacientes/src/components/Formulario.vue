@@ -3,66 +3,80 @@ import { reactive, computed } from 'vue';
 import type { Mascota, Alertas } from '../interfaces/Mascota';
 import Alerta from './Alerta.vue';
 
-  const alerta = reactive<Alertas>({
-    tipo: '',
-    mensaje: ''
-  })
+// Estado reactivo para mostrar mensajes (éxito o error)
+const alerta = reactive<Alertas>({
+  tipo: '',
+  mensaje: ''
+})
 
-  const props = defineProps<{ paciente: Mascota }>()
+// Props que recibe el componente (paciente actual)
+const props = defineProps<{ paciente: Mascota }>()
 
-  const pacienteProps = props.paciente
+// Asignamos los props a una constante para fácil acceso
+const pacienteProps = props.paciente
 
-  const emit = defineEmits<{
-    (e: 'update:nombre', value: string): void
-    (e: 'update:propietario', value: string): void
-    (e: 'update:email', value: string): void
-    (e: 'update:alta', value: string): void
-    (e: 'update:sintomas', value: string): void
-    (e: 'guardar-paciente'):void
-  }>()
+// Eventos que el componente puede emitir hacia el padre
+const emit = defineEmits<{
+  (e: 'update:nombre', value: string): void
+  (e: 'update:propietario', value: string): void
+  (e: 'update:email', value: string): void
+  (e: 'update:alta', value: string): void
+  (e: 'update:sintomas', value: string): void
+  (e: 'guardar-paciente'): void
+}>()
 
-  const validar = () => {
-    const pacienteValidar = Object.values(pacienteProps).includes('');
-    if (pacienteValidar) {
-      alerta.mensaje = 'Todos los campos son obligatorios'
-      alerta.tipo = 'error'
-      return
-    }
-
-    emit('guardar-paciente')
-    alerta.mensaje = 'Paciente almacenado correctamente'
-    alerta.tipo = 'exito'
-
-    setTimeout(() => {
-      Object.assign(alerta, {
-        tipo: '',
-        mensaje: ''
-      })
-    },3000)
+// Valida los campos antes de guardar
+const validar = () => {
+  const pacienteValidar = Object.values(pacienteProps).includes('');
+  if (pacienteValidar) {
+    alerta.mensaje = 'Todos los campos son obligatorios'
+    alerta.tipo = 'error'
+    return
   }
 
-  const editando = computed(() => {
-    return pacienteProps.id
-  })
+  // Emitimos evento para guardar paciente
+  emit('guardar-paciente')
 
+  // Mostramos mensaje de éxito
+  alerta.mensaje = 'Paciente almacenado correctamente'
+  alerta.tipo = 'exito'
+
+  // Limpiamos el mensaje después de 3 segundos
+  setTimeout(() => {
+    Object.assign(alerta, {
+      tipo: '',
+      mensaje: ''
+    })
+  }, 3000)
+}
+
+// Detecta si se está editando un paciente (si tiene id)
+const editando = computed(() => {
+  return pacienteProps.id
+})
 </script>
-
 
 <template>
   <div class="md:w-1/2">
+    <!-- Título principal -->
     <h2 class="font-black text-3xl text-center">Seguimiento Pacientes</h2>
     <p class="text-lg mt-5 text-center mb-10">
       Añade Pacientes y
       <span class="text-indigo-600 font-bold">Adminístralos</span>
     </p>
+
+    <!-- Alerta de validación o confirmación -->
     <Alerta 
       v-if="alerta.mensaje"
       :alerta="alerta"
     />
+
+    <!-- Formulario principal -->
     <form
       class="bg-white shadow-md rounded-lg py-10 px-5 mb-10" 
       @submit.prevent="validar"
     >
+      <!-- Campo: Nombre Mascota -->
       <div class="mb-5">
         <label 
           for="mascota"
@@ -78,6 +92,8 @@ import Alerta from './Alerta.vue';
           v-model="paciente.nombre"
         />
       </div>
+
+      <!-- Campo: Propietario -->
       <div class="mb-5">
         <label 
           for="propietario"
@@ -93,6 +109,8 @@ import Alerta from './Alerta.vue';
           v-model="paciente.propietario"
         />
       </div>
+
+      <!-- Campo: Email -->
       <div class="mb-5">
         <label 
           for="email"
@@ -108,6 +126,8 @@ import Alerta from './Alerta.vue';
           v-model="paciente.email"
         />
       </div>
+
+      <!-- Campo: Fecha de alta -->
       <div class="mb-5">
         <label 
           for="alta"
@@ -122,6 +142,8 @@ import Alerta from './Alerta.vue';
           v-model="paciente.alta"
         />
       </div>     
+
+      <!-- Campo: Síntomas -->
       <div class="mb-5">
         <label 
           for="sintomas"
@@ -136,15 +158,13 @@ import Alerta from './Alerta.vue';
           v-model="paciente.sintomas"
         />
       </div> 
+
+      <!-- Botón principal (editar o registrar) -->
       <input 
         type="submit"
         class="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-colors"
-        :value="[editando ? 'Guardar Cambios':'Registrar Paciente']"
+        :value="[editando ? 'Guardar Cambios' : 'Registrar Paciente']"
       />        
     </form>
   </div>
 </template>
-
-<style scoped>
-
-</style>
