@@ -149,7 +149,7 @@ npm run preview
 ## 👨‍💻 Autor
 
 **Aldair Cruz Bautista**  
-📧 Desarrollador Frontend Vue + TypeScript  
+📧 Desarrollador Frontend Vue 3 + TypeScript  
 💼 Proyectos educativos y dashboards interactivos  
 
 ---
