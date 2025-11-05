@@ -157,4 +157,4 @@ npm run preview
 ## 📜 Licencia
 
 Este proyecto está bajo la licencia **MIT**.  
-Puedes usarlo, modificarlo y distribuirlo libremente con atribución al autor original.
+Puedes usarlo, modificarlo y distribuirlo libremente con atribución al autor original (Juan Pablo de la Torre).
