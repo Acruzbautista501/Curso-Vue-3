@@ -2,7 +2,7 @@
   import { ref } from 'vue';
   import Alerta from './Alerta.vue';
 
-  const presupuesto = ref<number>(0)
+  const presupuesto = ref<number | ''>(0)
   const error = ref<string>('')
 
   const emit = defineEmits<{
@@ -10,11 +10,12 @@
   }>()
 
   const definirPresupuesto = () => {
-    if(presupuesto.value <= 0) {
+    if(presupuesto.value === '' || presupuesto.value <= 0) {
       error.value = 'Presupuesto no válido'
       setTimeout(() => {
         error.value = ''
       }, 3000);
+      return
     }
     emit('definir-presupuesto', presupuesto.value)
   }
