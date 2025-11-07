@@ -1,14 +1,47 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import Presupuesto from './components/Presupuesto.vue';
-  import ControlPresupuesto from './components/ControlPresupuesto.vue';
-  
-  const presupuesto = ref<number>(0)
+import { ref, reactive } from 'vue'
+import Presupuesto from './components/Presupuesto.vue'
+import ControlPresupuesto from './components/ControlPresupuesto.vue'
+import type { Planificador, Modals, Gasto } from './interfaces/Presupuesto'
+import iconoNuevoGasto from './assets/img/nuevo-gasto.svg'
+import Modal from './components/Modal.vue'
 
-  const definirPresupuesto = (cantidad:number) => {
-    presupuesto.value = cantidad
-  }
+const modal = reactive<Modals>({
+  mostrar: false,
+  animar: false
+})
 
+const presupuesto = ref<Planificador>({
+  presupuesto: 0,
+  disponible: 0,
+})
+
+const gasto = reactive<Gasto>({
+  id: null,
+  nombre: '',
+  cantidad: '',
+  categoria: '',
+  fecha: Date.now()
+})
+
+const definirPresupuesto = (cantidad: number) => {
+  presupuesto.value.presupuesto = cantidad
+  presupuesto.value.disponible = cantidad
+}
+
+const mostrarModal = () => {
+  modal.mostrar = true
+  setTimeout(() => {
+    modal.animar = true
+  }, 300);
+}
+
+const ocultarModal = () => {
+  modal.animar = false
+  setTimeout(() => {
+    modal.mostrar = false
+  }, 300);
+}
 </script>
 
 <template>
@@ -17,16 +50,38 @@
       <h1>Planificador de Gastos</h1>
       <div class="contenedor-header contenedor sombra">
         <Presupuesto 
-          v-if="presupuesto === 0"
+          v-if="presupuesto.presupuesto === 0"
           @definir-presupuesto="definirPresupuesto"
         />
         <ControlPresupuesto 
           v-else
+          :presupuesto="presupuesto"
         />
       </div>
     </header>
+    <main v-if="presupuesto.presupuesto > 0">
+
+      <div class="crear-gasto">
+        <img 
+          :src="iconoNuevoGasto" 
+          alt="icono nuevo gasto"
+          @click="mostrarModal"
+        >
+      </div>
+      <Modal
+        v-if="modal.mostrar" 
+        @ocultar-modal="ocultarModal"
+        :modal="modal"
+        :gasto="gasto"
+        v-model:nombre="gasto.nombre"
+        v-model:cantidad="gasto.cantidad"
+        v-model:categoria="gasto.categoria"
+        
+      />
+    </main>
   </div>
 </template>
+
 
 <style>
   :root {
@@ -81,5 +136,14 @@
     background-color: var(--blanco);
     border-radius: 1.2rem;
     padding: 5rem;
+  }
+  .crear-gasto {
+    position: fixed;
+    bottom: 5rem;
+    right: 5rem;
+  }
+  .crear-gasto img {
+    width: 5rem;
+    cursor: pointer;
   }
 </style>

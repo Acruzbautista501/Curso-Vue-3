@@ -1,5 +1,11 @@
 <script setup lang="ts">
   import grafico from '../assets/img/grafico.jpg'
+  import { formatearCantidad } from '../helpers';
+  import type { Planificador } from '../interfaces/Presupuesto';
+
+  defineProps<{
+    presupuesto: Planificador
+  }>()
 </script>
 
 <template>
@@ -18,11 +24,11 @@
       </button>
       <p>
         <span>Presupuesto:</span>
-        $0
+        {{ formatearCantidad(presupuesto.presupuesto )}}
       </p>
       <p>
         <span>Disponible:</span>
-        $0
+        {{ formatearCantidad(presupuesto.disponible )}}
       </p>
       <p>
         <span>Gastado:</span>
