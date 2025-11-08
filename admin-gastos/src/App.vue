@@ -2,9 +2,11 @@
 import { ref, reactive } from 'vue'
 import Presupuesto from './components/Presupuesto.vue'
 import ControlPresupuesto from './components/ControlPresupuesto.vue'
-import type { Planificador, Modals, Gasto } from './interfaces/Presupuesto'
-import iconoNuevoGasto from './assets/img/nuevo-gasto.svg'
 import Modal from './components/Modal.vue'
+import Gasto from './components/Gasto.vue'
+import { generarId } from './helpers'
+import type { Planificador, Modals, Gastos } from './interfaces/Presupuesto'
+import iconoNuevoGasto from './assets/img/nuevo-gasto.svg'
 
 const modal = reactive<Modals>({
   mostrar: false,
@@ -16,13 +18,15 @@ const presupuesto = ref<Planificador>({
   disponible: 0,
 })
 
-const gasto = reactive<Gasto>({
-  id: null,
+const gasto = reactive<Gastos>({
+  id: '',
   nombre: '',
   cantidad: '',
   categoria: '',
   fecha: Date.now()
 })
+
+const gastos = ref<Gastos[]>([])
 
 const definirPresupuesto = (cantidad: number) => {
   presupuesto.value.presupuesto = cantidad
@@ -42,8 +46,20 @@ const ocultarModal = () => {
     modal.mostrar = false
   }, 300);
 }
+
 const guardarGasto = () => {
-  
+  gastos.value.push({
+    ...gasto,
+    id: generarId()
+  })
+
+  ocultarModal()
+  Object.assign(gasto, {
+    nombre: '',
+    cantidad: '',
+    categoria: '',
+    fecha: Date.now()
+  })
 }
 </script>
 
@@ -63,6 +79,15 @@ const guardarGasto = () => {
       </div>
     </header>
     <main v-if="presupuesto.presupuesto > 0">
+
+      <div class="listado-gastos contenedor">
+        <h2>{{ gastos.length > 0 ? 'Gastos' : 'No hay gastos' }}</h2>
+        <Gasto
+         v-for="gasto in gastos"
+         :key="gasto.id"
+         :gasto="gasto"
+        />
+      </div>
 
       <div class="crear-gasto">
         <img 
@@ -148,5 +173,12 @@ const guardarGasto = () => {
   .crear-gasto img {
     width: 5rem;
     cursor: pointer;
+  }
+  .listado-gastos {
+    margin-top: 10rem;
+  }
+  .listado-gastos h2 {
+    font-weight: 900;
+    color: var(--gris-oscuro);
   }
 </style>

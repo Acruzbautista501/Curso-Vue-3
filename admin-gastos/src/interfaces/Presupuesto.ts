@@ -8,8 +8,8 @@ export interface Modals {
     animar: boolean
 }
 
-export interface Gasto {
-  id: string | null
+export interface Gastos {
+  id: number | string
   nombre : string
   cantidad: string | number
   categoria: string

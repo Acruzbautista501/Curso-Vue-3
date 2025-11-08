@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import cerrarModal from '../assets/img/cerrar.svg'
-import type { Gasto, Modals } from '../interfaces/Presupuesto';
+import type { Gastos, Modals } from '../interfaces/Presupuesto';
 import Alerta from './Alerta.vue';
 
 const error = ref<string>('')
@@ -16,7 +16,7 @@ const emit = defineEmits<{
 
 const props = defineProps<{
   modal: Modals,
-  gasto: Gasto
+  gasto: Gastos
 }>()
 
 const agregarGasto = () => {
@@ -41,6 +41,8 @@ const agregarGasto = () => {
     }, 3000);
     return
   }
+
+  emit('guardar-gasto')
 }
 </script>
 
