@@ -1,6 +1,7 @@
 export interface Planificador {
   presupuesto: number
   disponible: number
+  gastado: number
 }
 
 export interface Modals {

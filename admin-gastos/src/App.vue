@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import Presupuesto from './components/Presupuesto.vue'
 import ControlPresupuesto from './components/ControlPresupuesto.vue'
 import Modal from './components/Modal.vue'
@@ -16,6 +16,7 @@ const modal = reactive<Modals>({
 const presupuesto = ref<Planificador>({
   presupuesto: 0,
   disponible: 0,
+  gastado: 0
 })
 
 const gasto = reactive<Gastos>({
@@ -27,6 +28,16 @@ const gasto = reactive<Gastos>({
 })
 
 const gastos = ref<Gastos[]>([])
+
+watch(gastos, () => {
+  const totalGastado = gastos.value.reduce((total, gasto) => Number(gasto.cantidad )+ total, 0)
+  presupuesto.value.gastado = totalGastado
+
+  const presupuestoDisponible = presupuesto.value.presupuesto - totalGastado
+  presupuesto.value.disponible = presupuestoDisponible
+}, {
+  deep: true
+})
 
 const definirPresupuesto = (cantidad: number) => {
   presupuesto.value.presupuesto = cantidad
@@ -64,7 +75,7 @@ const guardarGasto = () => {
 </script>
 
 <template>
-  <div>
+  <div :class="{fijar: modal.mostrar}">
     <header>
       <h1>Planificador de Gastos</h1>
       <div class="contenedor-header contenedor sombra">
@@ -137,8 +148,12 @@ const guardarGasto = () => {
   h1 {
     font-size: 4rem;
   }
-  h3 {
+  h2 {
     font-size: 3rem;
+  }
+  .fijar {
+    overflow: hidden;
+    height: 100vh;
   }
   header {
     background-color: var(--azul);
@@ -181,4 +196,5 @@ const guardarGasto = () => {
     font-weight: 900;
     color: var(--gris-oscuro);
   }
+
 </style>

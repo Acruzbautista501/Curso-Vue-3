@@ -32,7 +32,7 @@
       </p>
       <p>
         <span>Gastado:</span>
-        $0
+        {{ formatearCantidad(presupuesto.gastado )}}
       </p>
     </div>
   </div>
