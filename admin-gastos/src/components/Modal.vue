@@ -8,6 +8,7 @@ const error = ref<string>('')
 
 const emit = defineEmits<{
   (e: 'ocultar-modal'):void
+  (e: 'guardar-gasto'):void
   (e: 'update:nombre', value: string):void
   (e: 'update:cantidad', value: string | number):void
   (e: 'update:categoria', value: string):void
