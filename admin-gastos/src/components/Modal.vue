@@ -17,12 +17,14 @@ const emit = defineEmits<{
 const props = defineProps<{
   modal: Modals,
   gasto: Gastos
+  disponible: number
 }>()
 
 const agregarGasto = () => {
   const cantidad = Number(props.gasto.cantidad)
   const categoria = props.gasto.categoria
   const nombre =  props.gasto.nombre
+  const disponible = props.disponible
 
   // Validar que no haya campos vacíos
   if([nombre, cantidad, categoria].includes('')) {
@@ -36,6 +38,15 @@ const agregarGasto = () => {
   // Validar la cantidad
   if(cantidad <= 0) {
     error.value = 'Cantidad no válida'
+    setTimeout(() => {
+      error.value = ''
+    }, 3000);
+    return
+  }
+
+
+  if(cantidad > disponible) {
+    error.value = 'Haz excedido el presupuesto'
     setTimeout(() => {
       error.value = ''
     }, 3000);

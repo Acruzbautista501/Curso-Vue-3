@@ -39,6 +39,14 @@ watch(gastos, () => {
   deep: true
 })
 
+watch(modal, () => {
+  if(!modal.mostrar) {
+    reiniciarStateGasto()
+  }
+}, {
+  deep: true
+})
+
 const definirPresupuesto = (cantidad: number) => {
   presupuesto.value.presupuesto = cantidad
   presupuesto.value.disponible = cantidad
@@ -59,18 +67,33 @@ const ocultarModal = () => {
 }
 
 const guardarGasto = () => {
-  gastos.value.push({
-    ...gasto,
-    id: generarId()
-  })
-
+  if (gasto.id) {
+    const { id } = gasto
+    const index = gastos.value.findIndex(g => g.id === id)
+    gastos.value[index] = {...gasto}
+  } else {
+    gastos.value.push({
+      ...gasto,
+      id: generarId()
+    })
+  }
   ocultarModal()
-  Object.assign(gasto, {
+  reiniciarStateGasto()
+}
+
+const reiniciarStateGasto = () => {
+    Object.assign(gasto, {
     nombre: '',
     cantidad: '',
     categoria: '',
     fecha: Date.now()
   })
+}
+
+const seleccionarGasto = (id:number|string) => {
+  const gastoEditar = gastos.value.filter(gasto => gasto.id === id)[0]
+  Object.assign(gasto, gastoEditar)
+  mostrarModal()
 }
 </script>
 
@@ -97,6 +120,7 @@ const guardarGasto = () => {
          v-for="gasto in gastos"
          :key="gasto.id"
          :gasto="gasto"
+         @seleccionar-gasto="seleccionarGasto"
         />
       </div>
 
@@ -112,6 +136,7 @@ const guardarGasto = () => {
         @ocultar-modal="ocultarModal"
         :modal="modal"
         :gasto="gasto"
+        :disponible="presupuesto.disponible"
         v-model:nombre="gasto.nombre"
         v-model:cantidad="gasto.cantidad"
         v-model:categoria="gasto.categoria"

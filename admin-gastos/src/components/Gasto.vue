@@ -9,19 +9,22 @@
   import IconoSalud from '../assets/img/icono_salud.svg'
   import IconoSuscripciones from '../assets/img/icono_suscripciones.svg'
 
-const diccionarioIconos: Record<Gastos['categoria'], string> = {
-  ahorro: IconoAhorro,
-  comida: IconoComida,
-  casa: IconoCasa,
-  gastos: IconoGastos,
-  ocio: IconoOcio,
-  salud: IconoSalud,
-  suscripciones: IconoSuscripciones
-}
-
+  const diccionarioIconos: Record<Gastos['categoria'], string> = {
+    ahorro: IconoAhorro,
+    comida: IconoComida,
+    casa: IconoCasa,
+    gastos: IconoGastos,
+    ocio: IconoOcio,
+    salud: IconoSalud,
+    suscripciones: IconoSuscripciones
+  }
 
   const props = defineProps<{
     gasto: Gastos
+  }>()
+
+  const emit = defineEmits<{
+    (e: 'seleccionar-gasto', id:number|string):void
   }>()
 
 </script>
@@ -32,7 +35,12 @@ const diccionarioIconos: Record<Gastos['categoria'], string> = {
       <img :src="diccionarioIconos[gasto.categoria]" alt="Icono Gasto" class="icono">
       <div class="detalles">
         <p class="categoria">{{ gasto.categoria }}</p>
-        <p class="nombre">{{ gasto.nombre }}</p>
+        <p 
+          class="nombre"
+          @click="emit('seleccionar-gasto', gasto.id)"
+        >
+          {{ gasto.nombre }}
+        </p>
         <p class="fecha">
           <span>Fecha: </span>
           {{ formatearFecha(gasto.fecha)}}
