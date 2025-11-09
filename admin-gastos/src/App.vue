@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 import Presupuesto from './components/Presupuesto.vue'
 import ControlPresupuesto from './components/ControlPresupuesto.vue'
 import Modal from './components/Modal.vue'
+import Filtros from './components/Filtros.vue'
 import Gasto from './components/Gasto.vue'
 import { generarId } from './helpers'
 import type { Planificador, Modals, Gastos } from './interfaces/Presupuesto'
 import iconoNuevoGasto from './assets/img/nuevo-gasto.svg'
+
 
 const modal = reactive<Modals>({
   mostrar: false,
@@ -16,7 +18,8 @@ const modal = reactive<Modals>({
 const presupuesto = ref<Planificador>({
   presupuesto: 0,
   disponible: 0,
-  gastado: 0
+  gastado: 0,
+  filtro: ''
 })
 
 const gasto = reactive<Gastos>({
@@ -95,6 +98,22 @@ const seleccionarGasto = (id:number|string) => {
   Object.assign(gasto, gastoEditar)
   mostrarModal()
 }
+
+// No se selecciona el id, ya que el modal contiene el id del gasto
+const eliminarGasto = () => {
+  if(confirm('¿Eliminar gasto?')){
+    gastos.value = gastos.value.filter(g => g.id !== gasto.id)
+    ocultarModal()
+  }
+}
+
+const gastosFiltrados = computed(() => {
+  const filtro = presupuesto.value.filtro
+  if(filtro) {
+    return gastos.value.filter(gasto => gasto.categoria === filtro)
+  }
+  return gastos.value
+})
 </script>
 
 <template>
@@ -114,10 +133,14 @@ const seleccionarGasto = (id:number|string) => {
     </header>
     <main v-if="presupuesto.presupuesto > 0">
 
+      <Filtros 
+        v-model:filtro="presupuesto.filtro"
+      />
+
       <div class="listado-gastos contenedor">
-        <h2>{{ gastos.length > 0 ? 'Gastos' : 'No hay gastos' }}</h2>
+        <h2>{{ gastosFiltrados.length > 0 ? 'Gastos' : 'No hay gastos' }}</h2>
         <Gasto
-         v-for="gasto in gastos"
+         v-for="gasto in gastosFiltrados"
          :key="gasto.id"
          :gasto="gasto"
          @seleccionar-gasto="seleccionarGasto"
@@ -134,13 +157,15 @@ const seleccionarGasto = (id:number|string) => {
       <Modal
         v-if="modal.mostrar" 
         @ocultar-modal="ocultarModal"
+        @guardar-gasto="guardarGasto"
+        @eliminar-gasto="eliminarGasto"
         :modal="modal"
         :gasto="gasto"
         :disponible="presupuesto.disponible"
+        :id="gasto.id"
         v-model:nombre="gasto.nombre"
         v-model:cantidad="gasto.cantidad"
         v-model:categoria="gasto.categoria"
-        @guardar-gasto="guardarGasto"
       />
     </main>
   </div>

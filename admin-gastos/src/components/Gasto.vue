@@ -19,7 +19,7 @@
     suscripciones: IconoSuscripciones
   }
 
-  const props = defineProps<{
+  defineProps<{
     gasto: Gastos
   }>()
 

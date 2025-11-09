@@ -2,6 +2,7 @@ export interface Planificador {
   presupuesto: number
   disponible: number
   gastado: number
+  filtro: string
 }
 
 export interface Modals {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import cerrarModal from '../assets/img/cerrar.svg'
 import type { Gastos, Modals } from '../interfaces/Presupuesto';
 import Alerta from './Alerta.vue';
@@ -9,6 +9,7 @@ const error = ref<string>('')
 const emit = defineEmits<{
   (e: 'ocultar-modal'):void
   (e: 'guardar-gasto'):void
+  (e: 'eliminar-gasto'):void
   (e: 'update:nombre', value: string):void
   (e: 'update:cantidad', value: string | number):void
   (e: 'update:categoria', value: string):void
@@ -18,13 +19,18 @@ const props = defineProps<{
   modal: Modals,
   gasto: Gastos
   disponible: number
+  id: string | number
 }>()
+
+
+const old = Number(props.gasto.cantidad)
 
 const agregarGasto = () => {
   const cantidad = Number(props.gasto.cantidad)
   const categoria = props.gasto.categoria
   const nombre =  props.gasto.nombre
   const disponible = props.disponible
+  const id = props.id
 
   // Validar que no haya campos vacíos
   if([nombre, cantidad, categoria].includes('')) {
@@ -44,17 +50,34 @@ const agregarGasto = () => {
     return
   }
 
-
-  if(cantidad > disponible) {
-    error.value = 'Haz excedido el presupuesto'
-    setTimeout(() => {
-      error.value = ''
-    }, 3000);
-    return
+  if(id) {
+    if(old) {
+      // Validar que el usuario no gaste más de lo necesario
+      if(cantidad > old + disponible) {
+        error.value = 'Haz excedido el presupuesto'
+        setTimeout(() => {
+          error.value = ''
+        }, 3000);
+        return
+      }
+    }
+  } else {
+    // Validar que el usuario no gaste más de lo necesario
+    if(cantidad > disponible) {
+      error.value = 'Haz excedido el presupuesto'
+      setTimeout(() => {
+        error.value = ''
+      }, 3000);
+      return
+    }
   }
 
   emit('guardar-gasto')
 }
+
+const editantdoGasto = computed(() => {
+  return props.id
+})
 </script>
 
 <template>
@@ -74,7 +97,7 @@ const agregarGasto = () => {
         class="nuevo-gasto"
         @submit.prevent="agregarGasto"
       >
-        <legend>Añadir Gasto</legend>
+        <legend>{{ editantdoGasto ? 'Editando Gasto': 'Añadiendo Gasto' }}</legend>
         <Alerta v-if="error">
           {{ error }}
         </Alerta>
@@ -113,8 +136,16 @@ const agregarGasto = () => {
           </select>
         </div>
 
-        <input type="submit" value="Añadir Gasto">
+        <input type="submit" :value="[editantdoGasto ? 'Guardar Cambios': 'Añadir Gasto']">
       </form>
+      <button
+        type="button"
+        class="btn-eliminar"
+        v-if="editantdoGasto"
+        @click="emit('eliminar-gasto')"
+      >
+        Eliminar Gasto
+      </button>
     </div>
   </div>
 </template>
@@ -180,6 +211,17 @@ const agregarGasto = () => {
     background-color: var(--azul);
     color: var(--blanco);
     font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-eliminar {
+    border:none;
+    padding: 1rem;
+    width: 100%;
+    background-color: #ef4444;
+    font-weight:  700;
+    font-size: 1.2rem;
+    color: var(--blanco);
+    margin-top: 10rem;
     cursor: pointer;
   }
 </style>
