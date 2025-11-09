@@ -1,11 +1,23 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import cerrarModal from '../assets/img/cerrar.svg'
-import type { Gastos, Modals } from '../interfaces/Presupuesto';
-import Alerta from './Alerta.vue';
+/* Importaciones principales de Vue */
+import { ref, computed } from 'vue'
 
+/* Imagen del botón para cerrar el modal */
+import cerrarModal from '../assets/img/cerrar.svg'
+
+/* Tipos TypeScript para mayor seguridad en props y estado */
+import type { Gastos, Modals } from '../interfaces/Presupuesto'
+
+/* Componente reutilizable para mostrar mensajes de error */
+import Alerta from './Alerta.vue'
+
+/* Estado local para manejar errores del formulario */
 const error = ref<string>('')
 
+/* 
+  Definición de eventos personalizados (emits):
+    - Permiten la comunicación hacia el componente padre
+*/
 const emit = defineEmits<{
   (e: 'ocultar-modal'):void
   (e: 'guardar-gasto'):void
@@ -15,6 +27,13 @@ const emit = defineEmits<{
   (e: 'update:categoria', value: string):void
 }>()
 
+/* 
+  Props recibidas desde el componente padre
+    - modal: controla visibilidad y animación
+    - gasto: contiene los datos del gasto actual
+    - disponible: dinero restante del presupuesto
+    - id: identifica si el gasto ya existe o es nuevo
+*/
 const props = defineProps<{
   modal: Modals,
   gasto: Gastos
@@ -25,56 +44,58 @@ const props = defineProps<{
 
 const old = Number(props.gasto.cantidad)
 
+/* 
+  Función principal para validar y guardar un gasto:
+    - Verifica campos vacíos, cantidad válida y límite de presupuesto
+*/
 const agregarGasto = () => {
   const cantidad = Number(props.gasto.cantidad)
   const categoria = props.gasto.categoria
-  const nombre =  props.gasto.nombre
+  const nombre = props.gasto.nombre
   const disponible = props.disponible
   const id = props.id
 
-  // Validar que no haya campos vacíos
-  if([nombre, cantidad, categoria].includes('')) {
+  /* Validar campos vacíos */
+  if ([nombre, cantidad, categoria].includes('')) {
     error.value = 'Todos los campos son obligatorios'
-    setTimeout(() => {
-      error.value = ''
-    }, 3000);
+    setTimeout(() => (error.value = ''), 3000)
     return
   }
 
-  // Validar la cantidad
-  if(cantidad <= 0) {
+  /* Validar cantidad válida */
+  if (cantidad <= 0) {
     error.value = 'Cantidad no válida'
-    setTimeout(() => {
-      error.value = ''
-    }, 3000);
+    setTimeout(() => (error.value = ''), 3000)
     return
   }
 
-  if(id) {
-    if(old) {
-      // Validar que el usuario no gaste más de lo necesario
-      if(cantidad > old + disponible) {
+  /* Validar que no se exceda el presupuesto disponible */
+  if (id) {
+    // Si se edita un gasto existente
+    if (old) {
+      if (cantidad > old + disponible) {
         error.value = 'Haz excedido el presupuesto'
-        setTimeout(() => {
-          error.value = ''
-        }, 3000);
+        setTimeout(() => (error.value = ''), 3000)
         return
       }
     }
   } else {
-    // Validar que el usuario no gaste más de lo necesario
-    if(cantidad > disponible) {
+    // Si se crea un nuevo gasto
+    if (cantidad > disponible) {
       error.value = 'Haz excedido el presupuesto'
-      setTimeout(() => {
-        error.value = ''
-      }, 3000);
+      setTimeout(() => (error.value = ''), 3000)
       return
     }
   }
 
+  /* Si pasa todas las validaciones, emite el evento para guardar */
   emit('guardar-gasto')
 }
 
+/* 
+  Determina si el usuario está editando o agregando un gasto:
+    - Si hay un id, está editando
+*/
 const editantdoGasto = computed(() => {
   return props.id
 })
@@ -82,25 +103,33 @@ const editantdoGasto = computed(() => {
 
 <template>
   <div class="modal">
+    <!-- Botón de cierre del modal -->
     <div class="cerrar-modal">
       <img 
         :src="cerrarModal" 
-        alt=""
+        alt="Cerrar modal"
         @click="emit('ocultar-modal')"
       >
     </div>
+
+    <!-- Contenedor del formulario con animación -->
     <div 
       class="contenedor contenedor-formulario"
       :class="[modal.animar ? 'animar' : 'cerrar']"
     >
+      <!-- Formulario de creación/edición de gasto -->
       <form
         class="nuevo-gasto"
         @submit.prevent="agregarGasto"
       >
-        <legend>{{ editantdoGasto ? 'Editando Gasto': 'Añadiendo Gasto' }}</legend>
+        <legend>{{ editantdoGasto ? 'Editando Gasto' : 'Añadiendo Gasto' }}</legend>
+
+        <!-- Alerta para mostrar errores de validación -->
         <Alerta v-if="error">
           {{ error }}
         </Alerta>
+
+        <!-- Campo: Nombre del gasto -->
         <div class="campo">
           <label for="nombre">Nombre Gasto:</label>
           <input 
@@ -110,6 +139,8 @@ const editantdoGasto = computed(() => {
             v-model="gasto.nombre"
           >
         </div>
+
+        <!-- Campo: Cantidad -->
         <div class="campo">
           <label for="cantidad">Cantidad:</label>
           <input 
@@ -119,6 +150,8 @@ const editantdoGasto = computed(() => {
             v-model="gasto.cantidad"
           >
         </div>
+
+        <!-- Campo: Categoría -->
         <div class="campo">
           <label for="categoria">Categoría:</label>
           <select 
@@ -136,8 +169,14 @@ const editantdoGasto = computed(() => {
           </select>
         </div>
 
-        <input type="submit" :value="[editantdoGasto ? 'Guardar Cambios': 'Añadir Gasto']">
+        <!-- Botón de guardar -->
+        <input 
+          type="submit" 
+          :value="[editantdoGasto ? 'Guardar Cambios' : 'Añadir Gasto']"
+        >
       </form>
+
+      <!-- Botón de eliminar (solo visible si se edita un gasto existente) -->
       <button
         type="button"
         class="btn-eliminar"
@@ -149,6 +188,7 @@ const editantdoGasto = computed(() => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
   .modal {
