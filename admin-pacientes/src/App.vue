@@ -1,16 +1,22 @@
 <script setup lang="ts">
-  // Importaciones principales
-  import { ref, reactive, watch, onMounted } from 'vue';
-  import { uid } from 'uid';
-  import type { Mascota } from './interfaces/Mascota';
-  import Header from './components/Header.vue';
-  import Formulario from './components/Formulario.vue';
-  import Pacientes from './components/Pacientes.vue';
+  // Importación de funciones reactivas del núcleo de Vue
+  import { ref, reactive, watch, onMounted } from 'vue'
+  
+  // Importa el generador de identificadores únicos
+  import { uid } from 'uid'
 
-  // Lista reactiva de pacientes
+  // Importa la interfaz de tipo para definir la estructura de una Mascota
+  import type { Mascota } from './interfaces/Mascota'
+
+  // Importa los componentes del proyecto
+  import Header from './components/Header.vue'
+  import Formulario from './components/Formulario.vue'
+  import Pacientes from './components/Pacientes.vue'
+
+  // Lista reactiva que almacena todas las mascotas (pacientes)
   const pacientes = ref<Mascota[]>([])
 
-  // Objeto reactivo para el formulario actual
+  // Objeto reactivo para manejar el formulario de una sola mascota
   const paciente = reactive<Mascota>({
     id: null,
     nombre: '',
@@ -20,12 +26,12 @@
     sintomas: ''
   })
 
-  // Guarda los cambios en localStorage cada vez que pacientes cambia
+  // Observa cambios en la lista de pacientes y guarda en localStorage automáticamente
   watch(pacientes, () => {
      guardarLocalStorage()
   }, { deep: true })
 
-  // Cargar datos almacenados al iniciar la app
+  // Carga los pacientes desde localStorage al iniciar la aplicación
   onMounted(() => {
     const pacientesStorage = localStorage.getItem('paciente')
     if (pacientesStorage) {
@@ -33,27 +39,27 @@
     }
   })
 
-  // Función para guardar los pacientes en localStorage
+  // Guarda la lista de pacientes actual en localStorage
   const guardarLocalStorage = () => {
     localStorage.setItem('paciente', JSON.stringify(pacientes.value))
   }
 
-  // Agregar o actualizar un paciente
+  // Crea o actualiza un paciente en la lista
   const guardarPaciente = () => {
     if (paciente.id) {
-      // Si existe ID → actualizar
+      // Si el paciente ya existe, se actualiza
       const { id } = paciente
       const index = pacientes.value.findIndex(p => p.id === id)
       pacientes.value[index] = { ...paciente }
     } else {
-      // Si no hay ID → agregar nuevo
+      // Si es un nuevo paciente, se agrega con un id único
       pacientes.value.push({
         ...paciente,
-        id: uid() // Genera un ID único
+        id: uid() 
       })
     }
 
-    // Reiniciar el formulario
+    // Limpia el formulario después de guardar
     Object.assign(paciente, {
       nombre: '',
       propietario: '',
@@ -64,7 +70,7 @@
     })
   }
 
-  // Cargar un paciente en el formulario para editarlo
+  // Carga la información de un paciente en el formulario para edición
   const actualizarPaciente = (id: string) => {
     const pacienteEditar = pacientes.value.find(p => p.id === id)
     if (pacienteEditar) {
@@ -72,20 +78,23 @@
     }
   }
 
-  // Eliminar paciente por ID
+  // Elimina un paciente por su id
   const eliminarPaciente = (id: string) => {
     pacientes.value = pacientes.value.filter(p => p.id !== id)
   }
-
 </script>
 
 <template>
+  <!-- Contenedor principal -->
   <div class="container mx-auto mt-20">
+
     <!-- Encabezado principal -->
     <Header />
 
+    <!-- Sección principal con formulario y listado -->
     <div class="mt-12 md:flex">
-      <!-- Formulario de registro/edición -->
+
+      <!-- Formulario para agregar o editar pacientes -->
       <Formulario 
         :paciente="paciente"
         v-model:nombre="paciente.nombre"
@@ -97,20 +106,20 @@
         :id="paciente.id"
       />
 
-      <!-- Listado de pacientes -->
+      <!-- Listado de pacientes registrados -->
       <div class="md:w-1/2 md:h-screen overflow-y-scroll">
         <h3 class="font-black text-3xl text-center">
           Administra a tus pacientes
         </h3>
 
-        <!-- Si hay pacientes registrados -->
+        <!-- Si hay pacientes, muestra la lista -->
         <div v-if="pacientes.length > 0">
           <p class="text-lg mt-5 text-center mb-10">
             Información de 
             <span class="text-indigo-600 font-bold">Pacientes</span>
           </p>
 
-          <!-- Renderiza cada paciente -->
+          <!-- Recorre y muestra cada paciente -->
           <Pacientes 
             v-for="paciente in pacientes"
             :paciente="paciente"
@@ -119,10 +128,9 @@
           />
         </div>
 
-        <!-- Si no hay pacientes -->
+        <!-- Si no hay pacientes, muestra un mensaje -->
         <p v-else class="mt-10 text-2xl text-center">No hay Pacientes</p>
       </div>
     </div>
   </div>
 </template>
-

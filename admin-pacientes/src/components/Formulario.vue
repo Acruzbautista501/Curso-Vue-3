@@ -1,59 +1,61 @@
 <script setup lang="ts">
-import { reactive, computed } from 'vue';
-import type { Mascota, Alertas } from '../interfaces/Mascota';
-import Alerta from './Alerta.vue';
+  // Importaciones de Vue y tipos de datos
+  import { reactive, computed } from 'vue';
+  import type { Mascota, Alertas } from '../interfaces/Mascota';
+  import Alerta from './Alerta.vue';
 
-// Estado reactivo para mostrar mensajes (éxito o error)
-const alerta = reactive<Alertas>({
-  tipo: '',
-  mensaje: ''
-})
+  // Estado reactivo para manejar alertas en el formulario
+  const alerta = reactive<Alertas>({
+    tipo: '',       // Tipo de alerta: 'error' o 'exito'
+    mensaje: ''     // Mensaje a mostrar en la alerta
+  })
 
-// Props que recibe el componente (paciente actual)
-const props = defineProps<{ paciente: Mascota }>()
+  // Props que recibe el componente (paciente actual)
+  const props = defineProps<{ paciente: Mascota }>()
 
-// Asignamos los props a una constante para fácil acceso
-const pacienteProps = props.paciente
+  // Asignamos los props a una constante para fácil acceso
+  const pacienteProps = props.paciente
 
-// Eventos que el componente puede emitir hacia el padre
-const emit = defineEmits<{
-  (e: 'update:nombre', value: string): void
-  (e: 'update:propietario', value: string): void
-  (e: 'update:email', value: string): void
-  (e: 'update:alta', value: string): void
-  (e: 'update:sintomas', value: string): void
-  (e: 'guardar-paciente'): void
-}>()
+  // Eventos que el componente puede emitir hacia el padre
+  const emit = defineEmits<{
+    (e: 'update:nombre', value: string): void
+    (e: 'update:propietario', value: string): void
+    (e: 'update:email', value: string): void
+    (e: 'update:alta', value: string): void
+    (e: 'update:sintomas', value: string): void
+    (e: 'guardar-paciente'): void
+  }>()
 
-// Valida los campos antes de guardar
-const validar = () => {
-  const pacienteValidar = Object.values(pacienteProps).includes('');
-  if (pacienteValidar) {
-    alerta.mensaje = 'Todos los campos son obligatorios'
-    alerta.tipo = 'error'
-    return
+  // Función para validar el formulario antes de guardar
+  const validar = () => {
+    // Verifica si algún campo está vacío
+    const pacienteValidar = Object.values(pacienteProps).includes('');
+    if (pacienteValidar) {
+      alerta.mensaje = 'Todos los campos son obligatorios'
+      alerta.tipo = 'error'
+      return
+    }
+
+    // Emite el evento para guardar el paciente
+    emit('guardar-paciente')
+
+    // Muestra mensaje de éxito
+    alerta.mensaje = 'Paciente almacenado correctamente'
+    alerta.tipo = 'exito'
+
+    // Limpiar alerta después de 3 segundos
+    setTimeout(() => {
+      Object.assign(alerta, {
+        tipo: '',
+        mensaje: ''
+      })
+    }, 3000)
   }
 
-  // Emitimos evento para guardar paciente
-  emit('guardar-paciente')
-
-  // Mostramos mensaje de éxito
-  alerta.mensaje = 'Paciente almacenado correctamente'
-  alerta.tipo = 'exito'
-
-  // Limpiamos el mensaje después de 3 segundos
-  setTimeout(() => {
-    Object.assign(alerta, {
-      tipo: '',
-      mensaje: ''
-    })
-  }, 3000)
-}
-
-// Detecta si se está editando un paciente (si tiene id)
-const editando = computed(() => {
-  return pacienteProps.id
-})
+  // Detecta si se está editando un paciente (si tiene id)
+  const editando = computed(() => {
+    return pacienteProps.id
+  })
 </script>
 
 <template>
