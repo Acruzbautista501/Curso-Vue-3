@@ -1,12 +1,14 @@
-import type { guitar } from '../interfaces/Guitar';
+// Importa la interfaz 'guitar' para tipar correctamente los objetos del arreglo
+import type { guitar } from '../interfaces/Guitar'
 
-export const db:guitar[] = [
+// Exporta una constante 'db' que contiene un arreglo de guitarras (base de datos simulada)
+export const db: guitar[] = [
     {
-        id: 1,
-        nombre: 'Lukather',
-        imagen: 'guitarra_01',
-        descripcion: 'Morbi ornare augue nisl, vel elementum dui mollis vel. Curabitur non ex id eros fermentum hendrerit.',
-        precio: 299,
+        id: 1,                       // Identificador único del producto
+        nombre: 'Lukather',          // Nombre o modelo de la guitarra
+        imagen: 'guitarra_01',       // Nombre de la imagen del producto
+        descripcion: 'Morbi ornare augue nisl, vel elementum dui mollis vel. Curabitur non ex id eros fermentum hendrerit.', // Descripción breve
+        precio: 299,                 // Precio de la guitarra
     },
     {
         id: 2,

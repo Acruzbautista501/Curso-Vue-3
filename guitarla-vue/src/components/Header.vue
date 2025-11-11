@@ -1,49 +1,62 @@
 <script setup lang="ts">
-  import { computed } from 'vue';
-  import type { carrito, guitar } from '../interfaces/Guitar';
-  // Escucha los eventos del componente padre
+// Importa la función "computed" desde Vue para crear propiedades reactivas calculadas
+import { computed } from 'vue'
+
+// Importa los tipos TypeScript "carrito" y "guitar" desde la carpeta de interfaces
+// Esto permite usar tipado fuerte en las props y funciones del componente
+import type { carrito, guitar } from '../interfaces/Guitar'
+
+  // Props que recibe el componente: 
+  // - carrito: lista de productos añadidos
+  // - guitarra: guitarra seleccionada actualmente
   const props = defineProps<{
     carrito: carrito[]
     guitarra: guitar 
   }>()
 
-  // Envia datos desde del componente hijo
+  // Eventos emitidos hacia el componente padre
   const emit = defineEmits<{
-    (e: 'decrementar-cantidad', id: number): void
-    (e: 'incrementar-cantidad', id: number): void
-    (e: 'agregar-carrito', guitarra: guitar):void
-    (e: 'eliminar-producto', id: number):void
-    (e: 'vaciar-carrito'):void
+    (e: 'decrementar-cantidad', id: number): void      // Disminuye la cantidad de un producto
+    (e: 'incrementar-cantidad', id: number): void      // Aumenta la cantidad de un producto
+    (e: 'agregar-carrito', guitarra: guitar): void     // Agrega una guitarra al carrito
+    (e: 'eliminar-producto', id: number): void         // Elimina un producto del carrito
+    (e: 'vaciar-carrito'): void                        // Vacía completamente el carrito
   }>()
 
-  // Calcula el total a pagar sumando (cantidad * precio) de cada producto del carrito
+  // Calcula el total a pagar sumando el precio * cantidad de cada producto
   const totalPagar = computed<number>(() => {
     return props.carrito.reduce<number>(
       (total, producto) => total + (producto.cantidad * producto.precio),
-      0 // Valor inicial para asegurar tipo numérico
+      0 // Valor inicial del acumulador
     )
   })
+</script>
 
-
-  </script>
 <template>
   <header class="py-5 header">
     <div class="container-xl">
+      <!-- Encabezado con logo y navegación -->
       <div class="row justify-content-center justify-content-md-between">
+        <!-- Logo del sitio -->
         <div class="col-8 col-md-3">
           <a href="index.html">
             <img class="img-fluid" src="/img/logo.svg" alt="imagen logo" />
           </a>
         </div>
 
-        <nav class="col-md-6 a mt-5 d-flex align-items-start justify-content-end">
+        <!-- Sección del carrito -->
+        <nav class="col-md-6 mt-5 d-flex align-items-start justify-content-end">
           <div class="carrito">
             <img class="img-fluid" src="/img/carrito.png" alt="imagen carrito" />
 
+            <!-- Contenedor desplegable del carrito -->
             <div id="carrito" class="bg-white p-3">
+              <!-- Si el carrito está vacío -->
               <p v-if="carrito.length === 0" class="text-center m-0">
-                El carrito esta vacio
+                El carrito está vacío
               </p>
+
+              <!-- Si hay productos en el carrito -->
               <div v-else>
                 <table class="w-100 table">
                   <thead>
@@ -55,38 +68,69 @@
                       <th></th>
                     </tr>
                   </thead>
+
                   <tbody>
+                    <!-- Recorre los productos del carrito -->
                     <tr 
                       v-for="producto in carrito"
                       :key="producto.id"
                     >
                       <td>
-                        <img class="img-fluid" :src="/img/ + producto.imagen + '.jpg'" alt="imagen guitarra" />
+                        <img 
+                          class="img-fluid" 
+                          :src="`/img/${producto.imagen}.jpg`" 
+                          alt="imagen guitarra" 
+                        />
                       </td>
                       <td>{{ producto.nombre }}</td>
                       <td class="fw-bold">${{ producto.precio }}</td>
                       <td class="flex align-items-start gap-4">
-                        <button type="button" class="btn btn-dark" @click="emit('decrementar-cantidad', producto.id)">-</button>
+                        <!-- Botones para modificar la cantidad -->
+                        <button 
+                          type="button" 
+                          class="btn btn-dark" 
+                          @click="emit('decrementar-cantidad', producto.id)"
+                        >-</button>
+
                         {{ producto.cantidad }}
-                        <button type="button" class="btn btn-dark" @click="emit('incrementar-cantidad', producto.id)">+</button>
+
+                        <button 
+                          type="button" 
+                          class="btn btn-dark" 
+                          @click="emit('incrementar-cantidad', producto.id)"
+                        >+</button>
                       </td>
                       <td>
-                        <button class="btn btn-danger" type="button" @click="emit('eliminar-producto', producto.id)">X</button>
+                        <!-- Botón para eliminar producto -->
+                        <button 
+                          class="btn btn-danger" 
+                          type="button" 
+                          @click="emit('eliminar-producto', producto.id)"
+                        >X</button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
 
+                <!-- Muestra el total a pagar -->
                 <p class="text-end">
                   Total pagar: <span class="fw-bold">${{ totalPagar }}</span>
                 </p>
-                <button class="btn btn-dark w-100 mt-3 p-2" @click="emit('vaciar-carrito')">Vaciar Carrito</button>
+
+                <!-- Botón para vaciar todo el carrito -->
+                <button 
+                  class="btn btn-dark w-100 mt-3 p-2" 
+                  @click="emit('vaciar-carrito')"
+                >
+                  Vaciar Carrito
+                </button>
               </div>  
             </div>
           </div>
         </nav>
       </div>
 
+      <!-- Sección principal del header -->
       <div class="row mt-5">
         <div class="col-md-6 text-center text-md-start pt-5">
           <h1 class="display-2 fw-bold">Modelo {{ guitarra.nombre }}</h1>
@@ -95,11 +139,19 @@
           </p>
           <p class="text-primary fs-1 fw-black">${{ guitarra.precio }}</p>
         
-          <button type="button" class="btn fs-4 bg-primary text-white py-2 px-5" @click="emit('agregar-carrito', guitarra)" >Agregar al Carrito</button>
+          <!-- Botón para agregar la guitarra seleccionada al carrito -->
+          <button 
+            type="button" 
+            class="btn fs-4 bg-primary text-white py-2 px-5" 
+            @click="emit('agregar-carrito', guitarra)"
+          >
+            Agregar al Carrito
+          </button>
         </div>
       </div>
     </div>
 
+    <!-- Imagen decorativa del encabezado -->
     <img class="header-guitarra" src="/img/header_guitarra.png" alt="imagen header" />
   </header>
 </template>
