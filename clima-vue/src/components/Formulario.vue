@@ -1,5 +1,12 @@
 <script setup lang="ts">
-const paises = [
+  import { reactive } from 'vue';
+  import type { Busqueda } from '../interfaces/Clima';
+
+  const busqueda = reactive<Busqueda>({
+    ciudad: '',
+    pais: ''
+  })
+  const paises = [
     { codigo: 'US', nombre: 'Estados Unidos' },
     { codigo: 'MX', nombre: 'México' },
     { codigo: 'AR', nombre: 'Argentina' },
@@ -7,7 +14,7 @@ const paises = [
     { codigo: 'CR', nombre: 'Costa Rica' },
     { codigo: 'ES', nombre: 'España' },
     { codigo: 'PE', nombre: 'Perú' }
-]
+  ]
 </script>
 
 <template>
@@ -20,9 +27,13 @@ const paises = [
         type="text"
         id="ciudad"
         placeholder="Ciudad"
+        v-model="busqueda.ciudad"
       >
       <label for="pais">Ciudad</label>
-      <select id="pais">
+      <select 
+        id="pais"
+        v-model="busqueda.pais"
+      >
         <option value="">-- Seleccione un país</option>
         <option 
           v-for="pais in paises"
