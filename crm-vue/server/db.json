@@ -1,8 +1,22 @@
 {
-  "clientes" : [
+  "clientes": [
     {
-      "nombre" : "Aldair",
-      "id": 1
+      "id": "84a6",
+      "nombre": "Aldair",
+      "apellido": "Cruz",
+      "email": "correo@correo.com",
+      "telefono": "123-456-7890",
+      "empresa": "Empresa Cliente",
+      "puesto": "Puesto Cliente"
+    },
+    {
+      "id": "ac4b",
+      "nombre": "Juan Pablo",
+      "apellido": "De la torre",
+      "email": "ejemplo@ejemplo.com",
+      "telefono": "012-345-6789",
+      "empresa": "Empresa Cliente",
+      "puesto": "Puesto Cliente"
     }
   ]
 }
