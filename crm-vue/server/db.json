@@ -7,16 +7,18 @@
       "email": "correo@correo.com",
       "telefono": "123-456-7890",
       "empresa": "Empresa Cliente",
-      "puesto": "Puesto Cliente"
+      "puesto": "Puesto Cliente",
+      "estado": 1
     },
     {
       "id": "ac4b",
-      "nombre": "Juan Pablo",
+      "nombre": "Juan Pablo - Actualizado",
       "apellido": "De la torre",
       "email": "ejemplo@ejemplo.com",
       "telefono": "012-345-6789",
       "empresa": "Empresa Cliente",
-      "puesto": "Puesto Cliente"
+      "puesto": "Puesto Cliente",
+      "estado": 1
     }
   ]
 }

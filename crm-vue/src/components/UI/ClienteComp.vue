@@ -1,15 +1,25 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Cliente } from '../../../interfaces/Clientes';
+import type { Cliente } from '../../interfaces/Clientes';
 import { RouterLink } from 'vue-router';
 
 const props = defineProps<{
   cliente: Cliente
 }>()
 
+const emit = defineEmits<{
+  (e: 'actualizar-estado', id: string, estado: number):void
+  (e: 'eliminar-cliente', id: string,):void
+}>()
+
 const nombreCliente = computed(() => {
   return props.cliente.nombre + ' ' + props.cliente.apellido
 })
+
+const estadoCliente = computed(() => {
+  return props.cliente.estado
+})
+
 </script>
 
 <template>
@@ -23,17 +33,24 @@ const nombreCliente = computed(() => {
       <p class="text-gray-600">{{ cliente.puesto }}</p>
     </td>
     <td class="whitespace-nowrap px-3 py-4 text-sm">
-
+      <button 
+        class="inline-flex rounded-full px-2 text-xs font-semibold leading-5"
+        :class="[estadoCliente ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800']"
+        @click="emit('actualizar-estado', cliente.id, cliente.estado ? 0 : 1)"
+      >
+        {{ estadoCliente ? 'Activo' : 'Inactivo'}}
+      </button>
     </td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
       <RouterLink 
-        to="/"
+        :to="{ name: 'editar-cliente', params:{id: cliente.id}}"
         class="text-indigo-600 hover:text-indigo-900 mr-5"
       >
         Editar
       </RouterLink>
       <button 
         class="text-red-600 hover:text-red-900"
+        @click="emit('eliminar-cliente', cliente.id)"
       >
         Eliminar
       </button>

@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
-import axios from 'axios';
+import ClienteService from '@/services/ClienteService';
 import RouterLink from '@/components/UI/RouterLink.vue';
 import Heading from '@/components/UI/UiHeading.vue';
 import Clientes from '@/components/UI/ClienteComp.vue';
-import type { Cliente } from '../../interfaces/Clientes';
+import type { Cliente } from '../interfaces/Clientes';
+
 
 const clientes = ref<Cliente[]>([])
 
 
 const getClientes = () => {
-  axios.get('http://localhost:4000/clientes')
+  ClienteService.obtnerClientes()
     .then(({data}) => clientes.value = data )
     .catch(error => console.log('Hubo un error:',error))
 }
@@ -25,6 +26,24 @@ const existenClientes = computed(() => {
   return clientes.value.length > 0
 })
 
+const actualizarEstado = (id: string, estado: number) => {
+  ClienteService.cambiarEstado(id, estado)
+    .then(() => {
+      const cliente = clientes.value.find(c => c.id === id)
+      if (cliente) {
+        cliente.estado = estado
+      }
+    })
+    .catch(error => console.log(error))
+}
+
+const eliminarCliente = (id: string) => {
+  ClienteService.eliminarCliente(id)
+    .then(() => {
+      clientes.value = clientes.value.filter(cliente => cliente.id !== id)
+    })
+    .catch(error => console.log(error))
+}
 </script>
 
 <template>
@@ -52,6 +71,8 @@ const existenClientes = computed(() => {
                         v-for="cliente in clientes" 
                         :key="cliente.id"
                         :cliente="cliente"
+                        @actualizar-estado="actualizarEstado"
+                        @eliminar-cliente="eliminarCliente"
                       />
                     </tbody>
                 </table>
