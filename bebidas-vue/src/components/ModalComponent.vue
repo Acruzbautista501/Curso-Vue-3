@@ -2,9 +2,28 @@
 import { useBebidasStore } from '@/stores/Bebidas';
 import { useModalStore } from '@/stores/Modal';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import type { Bebida } from '@/interfaces/Categorias';
+import { useFavoritosStore } from '@/stores/Favoritos';
 
 const modal = useModalStore()
 const bebidas = useBebidasStore()
+const favorito = useFavoritosStore()
+
+const formatearIngredientes = () => {
+  const ingredientes: string[] = []
+
+  for (let i = 1; i <= 15; i++) {
+    const ingrediente = bebidas.receta[`strIngredient${i}` as keyof Bebida]
+    const medida = bebidas.receta[`strMeasure${i}` as keyof Bebida]
+
+    if (ingrediente) {
+      ingredientes.push(`${ingrediente} - ${medida ?? ''}`)
+    }
+  }
+
+  return ingredientes
+
+}
 
 </script>
 
@@ -26,7 +45,20 @@ const bebidas = useBebidasStore()
                     <img 
                       :src="bebidas.receta.strDrinkThumb" 
                        :alt="`Imagen de ${bebidas.receta.strDrink}`"
+                       class="mx-auto w-96"
                     >
+                    <DialogTitle as="h3" class="text-gray-900 text-4xl font-extrabold my-5">
+                      Ingredientes y Cantidades
+                    </DialogTitle>
+                    <div v-for="(item, index) in formatearIngredientes()" :key="index">
+                      <p class="text-lg text-gray-500">
+                        {{ item }}
+                      </p>
+                    </div>
+                    <DialogTitle as="h3" class="text-gray-900 text-4xl font-extrabold my-5">
+                      Instrucciones
+                    </DialogTitle>
+                    <p class="text-lg text-gray-500">{{ bebidas.receta.strInstructions }}</p>
                   </div>
                 </div>
                 <div class="mt-5 sm:mt-6 flex justify-between gap-4">
@@ -36,6 +68,13 @@ const bebidas = useBebidasStore()
                     @click="modal.handleClickMdodal()"
                   >
                     Cerrar
+                  </button>
+                  <button
+                    type="button"
+                    class="w-full rounded bg-orange-600 p-3 font-bold uppercase text-white shadow hover:bg-orange-500"
+                    @click="favorito.handleClickFavorito"
+                  >
+                    {{ modal.textoBoton }}
                   </button>
                 </div> 
               </DialogPanel>

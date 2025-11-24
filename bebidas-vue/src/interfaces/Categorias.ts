@@ -15,13 +15,13 @@ export interface Receta {
 
 export interface Bebida {
   dateModified?: string
-  idDrink?: string
+  idDrink: string
   strAlcoholic?: string
   strCategory?: string
   strCreativeCommonsConfirmed?: string
-  strDrink?: string
+  strDrink: string
   strDrinkAlternate?: string
-  strDrinkThumb?: string
+  strDrinkThumb: string
   strGlass?: string
   strIBA?: string
   strImageAttribution?: string
