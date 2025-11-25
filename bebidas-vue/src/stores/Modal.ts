@@ -1,12 +1,12 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { useFavoritosStore } from "./Favoritos";
-import { useBebidasStore } from "./Bebidas";
+// import { useBebidasStore } from "./Bebidas";
 
 export const useModalStore = defineStore('modal', ()=> {
 
   const favoritos = useFavoritosStore()
-  const bebidas = useBebidasStore()
+  // const bebidas = useBebidasStore()
   
   const modal = ref<boolean>(false)
 
@@ -15,7 +15,7 @@ export const useModalStore = defineStore('modal', ()=> {
   }
 
   const textoBoton = computed(() => {
-    return favoritos.existeFavorito(bebidas.receta.idDrink) ? 'Eliminar de Favoritos' : 'Agregar a Favoritos'
+    return favoritos.existeFavorito() ? 'Eliminar de Favoritos' : 'Agregar a Favoritos'
   })
   
   return {
