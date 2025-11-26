@@ -2,50 +2,59 @@ import { defineStore } from "pinia";
 import { ref, watch, onMounted, computed } from "vue";
 import { useBebidasStore } from "./Bebidas";
 import type { Bebida } from "@/interfaces/Categorias";
-import { useModalStore } from "./Modal";
+import { useModalStore } from "./Modal"
+import { useNotificacionStore } from "./Notificaciones";
 
 
 export const useFavoritosStore = defineStore('favoritos', () => {
 
   const bebidas = useBebidasStore()
-
   const favoritos = ref<Bebida[]>([])
-
+  const notificaciones = useNotificacionStore()
   const modal = useModalStore()
 
-onMounted(() => {
-  const data = localStorage.getItem('favoritos')
-  favoritos.value = data ? JSON.parse(data) : []
-})
-
+  onMounted(() => {
+    const data = localStorage.getItem('favoritos')
+    favoritos.value = data ? JSON.parse(data) : []
+  })
 
   watch(favoritos, () => {
     sincronizarLocalStorage()
-  }, {
-    deep: true
-  }
-)
+  }, { deep: true })
 
   function sincronizarLocalStorage() {
     localStorage.setItem('favoritos', JSON.stringify(favoritos.value))
   }
 
   function existeFavorito() {
+    if (!bebidas.receta) return false
+
     const dataStorage = localStorage.getItem('favoritos')
     const favoritosLocalStorage = dataStorage ? JSON.parse(dataStorage) : []
-    return favoritosLocalStorage.some((favorito: Bebida) => favorito.idDrink === bebidas.receta.idDrink)
+
+    return favoritosLocalStorage.some(
+      (favorito: Bebida) => favorito.idDrink === bebidas.receta!.idDrink
+    )
   }
 
   function eliminarFavorito() {
-    favoritos.value = favoritos.value.filter( favorito => favorito.idDrink !== bebidas.receta.idDrink)
+    if (!bebidas.receta) return
+
+    favoritos.value = favoritos.value.filter(
+      favorito => favorito.idDrink !== bebidas.receta!.idDrink
+    )
   }
 
   function agregarFavorito() {
+    if (!bebidas.receta) return
     favoritos.value.push(bebidas.receta)
+
+    notificaciones.campos.mostrar = true
+    notificaciones.campos.texto = 'Se agrego a favoritos'
   }
 
   function handleClickFavorito() {
-    if(existeFavorito()) {
+    if (existeFavorito()) {
       eliminarFavorito()
     } else {
       agregarFavorito()
@@ -61,5 +70,6 @@ onMounted(() => {
     favoritos,
     noFavoritos
   }
-}) 
+})
+
 

@@ -14,7 +14,7 @@ export const useBebidasStore = defineStore('bebidas', () => {
    })
 
    const recetas = ref<Receta[]>([])
-   const receta = ref<Bebida>({})
+   const receta = ref<Bebida | null>(null)
 
    onMounted(async () => {
     const cat = APIServices.obtenerCategorias()

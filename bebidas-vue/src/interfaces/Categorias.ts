@@ -66,3 +66,10 @@ export interface Bebida {
   strTags?: string
   strVideo?: string
 }
+
+
+export interface Notificacion {
+  texto: string
+  error: boolean
+  mostrar: boolean
+}
